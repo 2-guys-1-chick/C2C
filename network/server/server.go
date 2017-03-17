@@ -8,6 +8,12 @@ import (
 	"net"
 	"sync"
 
+	"log"
+
+	"syscall"
+
+	"os"
+
 	"github.com/2-guys-1-chick/c2c/network"
 )
 
@@ -32,8 +38,10 @@ func (s *srv) acceptConnections() {
 		conn, err := s.srv.Accept()
 		if err != nil {
 			// handle error
+			log.Println(err)
 		}
 
+		fmt.Println("Server: New incoming connection")
 		l := &listener{
 			conn: conn,
 		}
@@ -81,15 +89,15 @@ func (s *srv) WriteToAll(packet network.Packet) error {
 	for _, l := range s.listeners {
 		_, err := l.conn.Write(bts)
 		if err != nil {
-			if err == io.EOF {
+			if isDisconnectError(err) {
+				fmt.Printf("Client disconnected on write: %v\n", err)
 				s.RemoveListener(l)
 				l.conn.Close()
 				break
 			} else {
-				fmt.Printf("Unexpected error: %v\n", err)
+				fmt.Printf("Server: Unexpected write error: %v\n", err)
 			}
 		}
-
 	}
 
 	return nil
@@ -99,13 +107,30 @@ func (s *srv) runConnectionCheck(l *listener) {
 	for {
 		_, err := bufio.NewReader(l.conn).ReadString(network.PacketSeparator)
 		if err != nil {
-			if err == io.EOF {
+			if isDisconnectError(err) {
+				fmt.Printf("Client disconnected on read (%v)\n", err)
 				s.RemoveListener(l)
 				l.conn.Close()
 				break
 			} else {
-				fmt.Printf("Unexpected error: %v\n", err)
+				fmt.Printf("Server: Unexpected read error: %v\n", err)
 			}
 		}
 	}
+}
+
+func isDisconnectError(err error) bool {
+	if err == io.EOF {
+		return true
+	}
+
+	if netErr, ok := err.(*net.OpError); ok {
+		if syscallErr, ok := netErr.Err.(*os.SyscallError); ok {
+			if syscallErr.Err.Error() == syscall.ECONNRESET.Error() {
+				return true
+			}
+		}
+	}
+
+	return false
 }

@@ -10,7 +10,7 @@ import (
 	"github.com/2-guys-1-chick/c2c/cfg"
 )
 
-func RoundupConnect(loadedIp []net.IP) error {
+func RoundupConnect(loadedIp []net.IP, onNewConnection func (c net.Conn)) error {
 	ipv4s, err := getOwnIPv4s()
 	if err != nil {
 		return err
@@ -42,8 +42,9 @@ func RoundupConnect(loadedIp []net.IP) error {
 					continue
 				}
 
-				fmt.Println("found new connection")
-				handleNewConnection(conn)
+				fmt.Printf("Connected to: %s\n", tryoutIp)
+				onNewConnection(conn)
+				go handleNewConnection(conn)
 			}
 		}()
 	}
