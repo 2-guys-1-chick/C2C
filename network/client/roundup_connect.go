@@ -11,6 +11,7 @@ import (
 )
 
 func RoundupConnect(loadedIp []net.IP, onNewConnection func (c net.Conn)) error {
+	fmt.Println("Looking for possible connections")
 	ipv4s, err := getOwnIPv4s()
 	if err != nil {
 		return err

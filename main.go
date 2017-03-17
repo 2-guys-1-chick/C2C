@@ -15,7 +15,7 @@ func main() {
 	}
 
 	connMgr := client.ConnManager{}
-	connMgr.RoundupConnect()
+	connMgr.InitRoundup()
 
 	quit := make(chan struct{})
 	<-quit
