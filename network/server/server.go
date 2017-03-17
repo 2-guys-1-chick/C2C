@@ -19,10 +19,10 @@ import (
 
 // These client will receive updates
 // Write to these
-func StartServer(port int) error {
+func StartServer(port int) (network.Distributor, error) {
 	s, err := net.Listen("tcp", fmt.Sprintf(":%d", port))
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	internalServer := &srv{
@@ -30,7 +30,7 @@ func StartServer(port int) error {
 	}
 
 	go internalServer.acceptConnections()
-	return nil
+	return internalServer, nil
 }
 
 func (s *srv) acceptConnections() {
@@ -80,7 +80,7 @@ func (s *srv) RemoveListener(l1 *listener) {
 	fmt.Printf("Listener was not found: %v\n", errors.New("Not found"))
 }
 
-func (s *srv) WriteToAll(packet network.Packet) error {
+func (s *srv) Distribute(packet *network.Packet) error {
 	bts, err := packet.Bytes()
 	if err != nil {
 		return err

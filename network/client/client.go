@@ -10,19 +10,19 @@ import (
 	"github.com/2-guys-1-chick/c2c/network"
 )
 
-func Connect(address string, port int) (net.Conn, error) {
+func Connect(address string, port int, handler network.PacketHandler) (net.Conn, error) {
 	conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", address, port))
 	if err != nil {
 		return nil, err
 	}
 
-	go handleNewConnection(conn)
+	go handleNewConnection(conn, handler)
 
 	return conn, nil
 }
 
 func (cm *ConnManager) Connect(address string, port int) (net.Conn, error) {
-	c, err := Connect(address, port)
+	c, err := Connect(address, port, cm.handler)
 	if err != nil {
 		return nil, err
 	}
@@ -30,6 +30,10 @@ func (cm *ConnManager) Connect(address string, port int) (net.Conn, error) {
 	cm.createConnection(c)
 
 	return c, nil
+}
+
+func (cm *ConnManager) SetPacketHandler(handler network.PacketHandler) {
+	cm.handler = handler
 }
 
 func (cm *ConnManager) createConnection(c net.Conn) {
@@ -41,7 +45,7 @@ func (cm *ConnManager) createConnection(c net.Conn) {
 }
 
 func (cm *ConnManager) RoundupConnect() error {
-	return RoundupConnect(cm.getIPs(), cm.createConnection)
+	return RoundupConnect(cm.getIPs(), cm.handler, cm.createConnection)
 
 }
 
@@ -58,7 +62,7 @@ func (cm *ConnManager) InitRoundup() {
 	}()
 }
 
-func handleNewConnection(conn net.Conn) {
+func handleNewConnection(conn net.Conn, handler network.PacketHandler) {
 	defer conn.Close()
 	for {
 		pckBts, err := bufio.NewReader(conn).ReadBytes(network.PacketSeparator)
@@ -67,7 +71,7 @@ func handleNewConnection(conn net.Conn) {
 		}
 
 		go func(bts []byte) {
-			err := handleBytes(pckBts)
+			err := handleBytes(pckBts, handler)
 			if err != nil {
 				// handle error
 			}
@@ -76,16 +80,11 @@ func handleNewConnection(conn net.Conn) {
 	}
 }
 
-func handleBytes(bts []byte) error {
+func handleBytes(bts []byte, handler network.PacketHandler) error {
 	packet, err := network.NewPacket(bts)
 	if err != nil {
 		return err
 	}
 
-	return handlePacket(packet)
-}
-
-func handlePacket(packet *network.Packet) error {
-	// TODO handle packet
-	return nil
+	return handler.Handle(packet)
 }

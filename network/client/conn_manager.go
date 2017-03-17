@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"net"
 	"sync"
+
+	"github.com/2-guys-1-chick/c2c/network"
 )
 
 type ConnManager struct {
-	conns []*conn
-	m     sync.Mutex
+	conns   []*conn
+	m       sync.Mutex
+	handler network.PacketHandler
 }
 
 func (cm *ConnManager) addConnection(conn *conn) {
