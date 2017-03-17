@@ -37,7 +37,9 @@ func (cm *ConnManager) removeConnection(conn1 *conn) {
 func (cm *ConnManager) getIPs() []net.IP {
 	var ips []net.IP
 	for _, c := range cm.conns {
-		ips = append(ips, c.ip)
+		if addr, ok := c.conn.RemoteAddr().(*net.TCPAddr); ok {
+			ips = append(ips, addr.IP)
+		}
 	}
 
 	return ips
