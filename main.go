@@ -25,6 +25,8 @@ func main() {
 
 	connMgr := client.ConnManager{}
 	connMgr.SetPacketHandler(repHandler)
+
+	connMgr.Connect("localhost", cfg.GetPort())
 	connMgr.InitRoundup()
 
 	<-quit
