@@ -17,15 +17,19 @@ const (
 )
 
 type VehicleData struct {
-	Speed     float64   `json:"speed"` // In Km/h
-	Geo       geo.Point `json:"geo"`
-	Weight    float64   `json:"weight"`
-	TireWear  float64   `json:"tire_wear"`
-	DriveMode driveMode `json:"drive_mode"`
+	Model           string    `json:"model"`
+	ManufactureYear int       `json:"manufacture_year"`
+	Speed           float64   `json:"speed"` // In Km/h
+	Geo             geo.Point `json:"geo"`
+	Weight          float64   `json:"weight"`
+	TireWear        float64   `json:"tire_wear"`
+	DriveMode       driveMode `json:"drive_mode"`
 }
 
 func (vd VehicleData) Encode() []byte {
 	var bfr bytes.Buffer
+	writeSubseparatedValue(&bfr, []byte(vd.Model))
+	writeSubseparatedValue(&bfr, []byte(strconv.Itoa(vd.ManufactureYear)))
 	writeSubseparatedValue(&bfr, formatFloat(vd.Speed, 3))
 	writeSubseparatedValue(&bfr, gpsBytes(vd.Geo))
 	writeSubseparatedValue(&bfr, formatFloat(vd.Weight, 4))
@@ -37,35 +41,41 @@ func (vd VehicleData) Encode() []byte {
 
 func (vd *VehicleData) Decode(bts []byte) error {
 	parts := bytes.Split(bts, []byte{innerSubseparator})
-	const mustPartsCount = 5
+	const mustPartsCount = 7
 	if len(parts) != mustPartsCount {
 		return fmt.Errorf("Vehicle Data: Unexpected number of parts, expected %d, received %d.", mustPartsCount, len(parts))
 	}
 
 	var err error
-	vd.Speed, err = parseFloat(parts[0])
+	vd.Model = string(parts[0])
+	vd.ManufactureYear, err = strconv.Atoi(string(parts[1]))
 	if err != nil {
 		return err
 	}
 
-	geoPtr, err := bytesGeo(parts[1])
+	vd.Speed, err = parseFloat(parts[2])
+	if err != nil {
+		return err
+	}
+
+	geoPtr, err := bytesGeo(parts[3])
 	if err != nil {
 		return err
 	}
 
 	vd.Geo = *geoPtr
 
-	vd.Weight, err = parseFloat(parts[2])
+	vd.Weight, err = parseFloat(parts[4])
 	if err != nil {
 		return err
 	}
 
-	vd.TireWear, err = parseFloat(parts[3])
+	vd.TireWear, err = parseFloat(parts[5])
 	if err != nil {
 		return err
 	}
 
-	vd.DriveMode = driveMode(parts[4])
+	vd.DriveMode = driveMode(parts[6])
 	return nil
 }
 

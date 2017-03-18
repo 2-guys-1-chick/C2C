@@ -41,14 +41,18 @@ var vehiclesMovementData = map[string][]pointTime{
 
 var vehicleData = map[string]packet.VehicleData{
 	"veh1": {
-		Weight:    0.85,
-		TireWear:  0.15,
-		DriveMode: packet.DriveModeManual,
+		Model:           "Škoda Kodiaq",
+		ManufactureYear: 2017,
+		Weight:          0.85,
+		TireWear:        0.15,
+		DriveMode:       packet.DriveModeManual,
 	},
 	"veh2": {
-		Weight:    0.75,
-		TireWear:  0.10,
-		DriveMode: packet.DriveModeAutopilot,
+		Model:           "Tesla Model S",
+		ManufactureYear: 2016,
+		Weight:          0.75,
+		TireWear:        0.10,
+		DriveMode:       packet.DriveModeAutopilot,
 	},
 }
 
