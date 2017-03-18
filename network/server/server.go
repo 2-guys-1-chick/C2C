@@ -91,6 +91,8 @@ func (s *srv) Distribute(packet *packet.Data) error {
 			} else {
 				fmt.Printf("Server: Unexpected write error: %v\n", err)
 			}
+		} else {
+			fmt.Printf("Server: Data to %s -> %s", l.conn.RemoteAddr(), bts)
 		}
 	}
 

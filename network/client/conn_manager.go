@@ -10,19 +10,24 @@ import (
 )
 
 type ConnManager struct {
-	conns   []*conn
+	conns   []net.Conn
 	m       sync.Mutex
 	handler network.PacketHandler
 }
 
-func (cm *ConnManager) addConnection(conn *conn) {
+
+func (cm *ConnManager) OnDisconnect(conn net.Conn) {
+	cm.removeConnection(conn)
+}
+
+func (cm *ConnManager) addConnection(conn net.Conn) {
 	cm.m.Lock()
 	defer cm.m.Unlock()
 
 	cm.conns = append(cm.conns, conn)
 }
 
-func (cm *ConnManager) removeConnection(conn1 *conn) {
+func (cm *ConnManager) removeConnection(conn1 net.Conn) {
 	cm.m.Lock()
 	defer cm.m.Unlock()
 
@@ -40,7 +45,7 @@ func (cm *ConnManager) removeConnection(conn1 *conn) {
 func (cm *ConnManager) getIPs() []net.IP {
 	var ips []net.IP
 	for _, c := range cm.conns {
-		if addr, ok := c.conn.RemoteAddr().(*net.TCPAddr); ok {
+		if addr, ok := c.RemoteAddr().(*net.TCPAddr); ok {
 			ips = append(ips, addr.IP)
 		}
 	}

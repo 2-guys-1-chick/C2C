@@ -10,26 +10,27 @@ import (
 	"github.com/2-guys-1-chick/c2c/network"
 	"github.com/2-guys-1-chick/c2c/network/packet"
 	"log"
+	"github.com/2-guys-1-chick/c2c/utils"
 )
 
-func Connect(address string, port int, handler network.PacketHandler) (net.Conn, error) {
+func Connect(address string, port int, packetHandler network.PacketHandler, disconnectHandler network.DisconnectHandler) (net.Conn, error) {
 	conn, err := net.Dial("tcp", fmt.Sprintf("%s:%d", address, port))
 	if err != nil {
 		return nil, err
 	}
 
-	go handleNewConnection(conn, handler)
+	go handleNewConnection(conn, packetHandler, disconnectHandler)
 
 	return conn, nil
 }
 
 func (cm *ConnManager) Connect(address string, port int) (net.Conn, error) {
-	c, err := Connect(address, port, cm.handler)
+	c, err := Connect(address, port, cm.handler, cm)
 	if err != nil {
 		return nil, err
 	}
 
-	cm.createConnection(c)
+	cm.addConnection(c)
 
 	return c, nil
 }
@@ -38,16 +39,8 @@ func (cm *ConnManager) SetPacketHandler(handler network.PacketHandler) {
 	cm.handler = handler
 }
 
-func (cm *ConnManager) createConnection(c net.Conn) {
-	cn := &conn{
-		conn: c,
-	}
-
-	cm.addConnection(cn)
-}
-
 func (cm *ConnManager) RoundupConnect() error {
-	return RoundupConnect(cm.getIPs(), cm.handler, cm.createConnection)
+	return RoundupConnect(cm.getIPs(), cm.handler, cm, cm.addConnection)
 
 }
 
@@ -64,16 +57,22 @@ func (cm *ConnManager) InitRoundup() {
 	}()
 }
 
-func handleNewConnection(conn net.Conn, handler network.PacketHandler) {
+func handleNewConnection(conn net.Conn, packetHandler network.PacketHandler, disconnectHandler network.DisconnectHandler) {
 	defer conn.Close()
 	for {
 		pckBts, err := bufio.NewReader(conn).ReadBytes(packet.Separator)
 		if err != nil {
-			// handle error
+			if utils.IsDisconnectError(err) {
+				disconnectHandler.OnDisconnect(conn)
+				break
+			} else {
+				// TODO
+				log.Println(err)
+			}
 		}
 
 		go func(bts []byte) {
-			err := handleBytes(pckBts, handler)
+			err := handleBytes(pckBts, packetHandler)
 			if err != nil {
 				log.Println(err)
 				// handle error
