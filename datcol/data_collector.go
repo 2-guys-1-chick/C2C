@@ -15,7 +15,7 @@ func (c *Collector) SetDistributor(distributor network.Distributor) {
 	c.distributor = distributor
 }
 
-func (c *Collector) Run() {
+func (c *Collector) Run(done chan<- struct{}) {
 	ticker := time.NewTicker(200 * time.Millisecond)
 	for {
 		select {
@@ -28,4 +28,6 @@ func (c *Collector) Run() {
 			c.distributor.Distribute(data)
 		}
 	}
+
+	done <- struct{}{}
 }

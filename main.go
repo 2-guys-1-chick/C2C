@@ -16,9 +16,10 @@ func main() {
 		log.Println(err)
 	}
 
+	quit := make(chan struct{})
 	collector := datcol.Collector{}
 	collector.SetDistributor(srv)
-	go collector.Run()
+	go collector.Run(quit)
 
 	repHandler := datrep.InitHandler()
 
@@ -26,6 +27,6 @@ func main() {
 	connMgr.SetPacketHandler(repHandler)
 	connMgr.InitRoundup()
 
-	quit := make(chan struct{})
+
 	<-quit
 }

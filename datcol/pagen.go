@@ -29,6 +29,10 @@ func (g *packetGenerator) GetNext() *packet.Data {
 
 	diff := time.Now().Sub(*g.initializedAt)
 	pnt, speed := calculateMovement(int(diff.Seconds() * 1000))
+	if pnt == nil {
+		return nil
+	}
+
 	data.VehicleData.Speed = speed
 	data.VehicleData.Geo = *pnt
 	return data
