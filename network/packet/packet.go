@@ -51,7 +51,7 @@ func writeSubseparatedValue(bfr *bytes.Buffer, val []byte) {
 }
 
 func NewData(bts []byte) (*Data, error) {
-	if bts[len(bts)-1] == Separator {
+	if len(bts) > 1 && bts[len(bts)-1] == Separator {
 		bts = bts[:len(bts)-1]
 	}
 

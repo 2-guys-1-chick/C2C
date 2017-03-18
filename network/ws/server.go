@@ -7,8 +7,8 @@ import (
 	"sync"
 
 	"github.com/2-guys-1-chick/c2c/cfg"
-	"golang.org/x/net/websocket"
 	"github.com/2-guys-1-chick/c2c/utils"
+	"golang.org/x/net/websocket"
 )
 
 type srv struct {
@@ -66,13 +66,10 @@ func (s *srv) handleNewConnection(ws *websocket.Conn) {
 				fmt.Printf("WS Server: Unexpected server read error: %v\n", err)
 			}
 		}
-
-		fmt.Println("INCOMIG MESSAGE", string(reply))
 	}
 }
 
 func (s *srv) Distribute(msg []byte) {
-	fmt.Println("LEN", len(s.conns))
 	for _, conn := range s.conns {
 		go s.sendMessage(msg, conn)
 	}
