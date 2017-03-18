@@ -7,9 +7,10 @@ import (
 
 	"time"
 
+	"log"
+
 	"github.com/2-guys-1-chick/c2c/network"
 	"github.com/2-guys-1-chick/c2c/network/packet"
-	"log"
 	"github.com/2-guys-1-chick/c2c/utils"
 )
 
@@ -45,7 +46,7 @@ func (cm *ConnManager) RoundupConnect() error {
 }
 
 func (cm *ConnManager) InitRoundup() {
-	ticker := time.NewTicker(30 * time.Second) // TODO constant
+	ticker := time.NewTicker(15 * time.Second) // TODO constant
 	cm.RoundupConnect()
 	go func() {
 		for {
