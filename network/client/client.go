@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/2-guys-1-chick/c2c/network"
+	"github.com/2-guys-1-chick/c2c/network/packet"
+	"log"
 )
 
 func Connect(address string, port int, handler network.PacketHandler) (net.Conn, error) {
@@ -65,7 +67,7 @@ func (cm *ConnManager) InitRoundup() {
 func handleNewConnection(conn net.Conn, handler network.PacketHandler) {
 	defer conn.Close()
 	for {
-		pckBts, err := bufio.NewReader(conn).ReadBytes(network.PacketSeparator)
+		pckBts, err := bufio.NewReader(conn).ReadBytes(packet.Separator)
 		if err != nil {
 			// handle error
 		}
@@ -73,6 +75,7 @@ func handleNewConnection(conn net.Conn, handler network.PacketHandler) {
 		go func(bts []byte) {
 			err := handleBytes(pckBts, handler)
 			if err != nil {
+				log.Println(err)
 				// handle error
 			}
 			// TODO do nothing?
@@ -81,10 +84,10 @@ func handleNewConnection(conn net.Conn, handler network.PacketHandler) {
 }
 
 func handleBytes(bts []byte, handler network.PacketHandler) error {
-	packet, err := network.NewPacket(bts)
+	pck, err := packet.NewData(bts)
 	if err != nil {
 		return err
 	}
 
-	return handler.Handle(packet)
+	return handler.Handle(pck)
 }

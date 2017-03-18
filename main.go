@@ -4,10 +4,10 @@ import (
 	"log"
 
 	"github.com/2-guys-1-chick/c2c/cfg"
+	"github.com/2-guys-1-chick/c2c/datcol"
 	"github.com/2-guys-1-chick/c2c/datrep"
 	"github.com/2-guys-1-chick/c2c/network/client"
 	"github.com/2-guys-1-chick/c2c/network/server"
-	"github.com/2-guys-1-chick/c2c/datcol"
 )
 
 func main() {

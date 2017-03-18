@@ -4,17 +4,14 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"io"
 	"net"
 	"sync"
 
 	"log"
 
-	"syscall"
-
-	"os"
-
 	"github.com/2-guys-1-chick/c2c/network"
+	"github.com/2-guys-1-chick/c2c/network/packet"
+	"github.com/2-guys-1-chick/c2c/utils"
 )
 
 // These client will receive updates
@@ -80,16 +77,13 @@ func (s *srv) RemoveListener(l1 *listener) {
 	fmt.Printf("Listener was not found: %v\n", errors.New("Not found"))
 }
 
-func (s *srv) Distribute(packet *network.Packet) error {
-	bts, err := packet.Bytes()
-	if err != nil {
-		return err
-	}
+func (s *srv) Distribute(packet *packet.Data) error {
+	bts := packet.Bytes()
 
 	for _, l := range s.listeners {
 		_, err := l.conn.Write(bts)
 		if err != nil {
-			if isDisconnectError(err) {
+			if utils.IsDisconnectError(err) {
 				fmt.Printf("Client disconnected on write: %v\n", err)
 				s.RemoveListener(l)
 				l.conn.Close()
@@ -105,9 +99,9 @@ func (s *srv) Distribute(packet *network.Packet) error {
 
 func (s *srv) runConnectionCheck(l *listener) {
 	for {
-		_, err := bufio.NewReader(l.conn).ReadString(network.PacketSeparator)
+		_, err := bufio.NewReader(l.conn).ReadString(packet.Separator)
 		if err != nil {
-			if isDisconnectError(err) {
+			if utils.IsDisconnectError(err) {
 				fmt.Printf("Client disconnected on read (%v)\n", err)
 				s.RemoveListener(l)
 				l.conn.Close()
@@ -119,18 +113,3 @@ func (s *srv) runConnectionCheck(l *listener) {
 	}
 }
 
-func isDisconnectError(err error) bool {
-	if err == io.EOF {
-		return true
-	}
-
-	if netErr, ok := err.(*net.OpError); ok {
-		if syscallErr, ok := netErr.Err.(*os.SyscallError); ok {
-			if syscallErr.Err.Error() == syscall.ECONNRESET.Error() {
-				return true
-			}
-		}
-	}
-
-	return false
-}

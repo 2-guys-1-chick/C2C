@@ -3,24 +3,35 @@ package datrep
 import (
 	"sync"
 
-	"fmt"
+	"encoding/json"
 
 	"github.com/2-guys-1-chick/c2c/network"
+	"github.com/2-guys-1-chick/c2c/network/packet"
+	"github.com/2-guys-1-chick/c2c/network/ws"
 )
 
 type handler struct {
-	m sync.Mutex
+	m    sync.Mutex
+	dist network.ByteDistributor
 }
 
 func InitHandler() network.PacketHandler {
-	return &handler{}
+	h := new(handler)
+	wsSrv := ws.New()
+	wsSrv.Run()
+	h.dist = wsSrv
+	return h
 }
 
-func (h *handler) Handle(packet *network.Packet) error {
+func (h *handler) Handle(packet *packet.Data) error {
 	h.m.Lock()
 	defer h.m.Unlock()
-	// This may not be needed
 
-	fmt.Printf("New incoming message: %s\n", packet.Text)
+	jsonData, err := json.Marshal(packet)
+	if err != nil {
+		return err
+	}
+
+	h.dist.Distribute(jsonData)
 	return nil
 }
