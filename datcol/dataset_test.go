@@ -1,8 +1,8 @@
 package datcol
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 	"time"
 )
 
@@ -18,7 +18,7 @@ func TestCalculatePath(t *testing.T) {
 	start := time.Now()
 	for {
 		diff := time.Now().Sub(start)
-		pnt , speed := calculateMovement(int(diff.Seconds() * 1000))
+		pnt, speed := calculateMovement("veh2", int(diff.Seconds()*1000))
 		if pnt == nil {
 			break
 		}
@@ -28,8 +28,7 @@ func TestCalculatePath(t *testing.T) {
 	}
 }
 
-
 func printInTime(ms int) {
-	gps, speed := calculateMovement(ms)
+	gps, speed := calculateMovement("veh1", ms)
 	fmt.Println(gps, speed)
 }

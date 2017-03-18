@@ -7,3 +7,7 @@ func GetPort() int {
 func GetWsPort() int {
 	return 8080
 }
+
+func GetVehicleId() string {
+	return GetValue(VEHICLE_ID)
+}

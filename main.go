@@ -27,6 +27,5 @@ func main() {
 	connMgr.SetPacketHandler(repHandler)
 	connMgr.InitRoundup()
 
-
 	<-quit
 }

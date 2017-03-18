@@ -3,8 +3,9 @@ package datcol
 import (
 	"time"
 
+	"github.com/2-guys-1-chick/c2c/cfg"
 	"github.com/2-guys-1-chick/c2c/network/packet"
-	"github.com/google/uuid"
+	"fmt"
 )
 
 type packetGenerator struct {
@@ -16,7 +17,7 @@ func (g *packetGenerator) init() {
 	now := time.Now()
 	g.initializedAt = &now
 
-	g.vehicleUUID = uuid.New().String()
+	g.vehicleUUID = cfg.GetVehicleId()
 
 }
 func (g *packetGenerator) GetNext() *packet.Data {
@@ -28,7 +29,7 @@ func (g *packetGenerator) GetNext() *packet.Data {
 	data.VehicleUUID = g.vehicleUUID
 
 	diff := time.Now().Sub(*g.initializedAt)
-	pnt, speed := calculateMovement(int(diff.Seconds() * 1000))
+	pnt, speed := calculateMovement(g.vehicleUUID, int(diff.Seconds()*1000))
 	if pnt == nil {
 		return nil
 	}
