@@ -60,7 +60,7 @@ func NewData(bts []byte) (*Data, error) {
 	parts := bytes.Split(bts, []byte{innerSeparator})
 	const mustPartsCount = 5
 	if len(parts) != mustPartsCount {
-		return nil, fmt.Errorf("Data: Unexpected number of parts, expected %d, received %d.", mustPartsCount, len(parts))
+		return nil, fmt.Errorf("Data: Unexpected number of parts, expected %d, received %d (%s).", mustPartsCount, len(parts), bts)
 	}
 
 	var err error
