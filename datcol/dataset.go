@@ -3,6 +3,7 @@ package datcol
 import (
 	"fmt"
 
+	"github.com/2-guys-1-chick/c2c/network/packet"
 	"github.com/kellydunn/golang-geo"
 )
 
@@ -35,6 +36,28 @@ var vehiclesMovementData = map[string][]pointTime{
 		{geo: geo.NewPoint(50.085255, 14.440863), ms: 20000},
 		{geo: geo.NewPoint(50.087272, 14.435091), ms: 20000},
 		{geo: geo.NewPoint(50.087169, 14.428461), ms: 20000},
+	},
+}
+
+var vehicleData = map[string]packet.VehicleData{
+	"veh1": {
+		Weight:    0.85,
+		TireWear:  0.15,
+		DriveMode: packet.DriveModeManual,
+	},
+	"veh2": {
+		Weight:    0.75,
+		TireWear:  0.10,
+		DriveMode: packet.DriveModeAutopilot,
+	},
+}
+
+var driverData = map[string]packet.DriverData{
+	"veh1": {
+		Moods: packet.Moods(packet.MoodTired, packet.MoodInexperienced),
+	},
+	"veh2": {
+		Moods: packet.Moods(packet.MoodDistracted, packet.MoodImpetuous),
 	},
 }
 

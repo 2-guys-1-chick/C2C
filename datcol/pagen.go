@@ -33,7 +33,16 @@ func (g *packetGenerator) GetNext() *packet.Data {
 		return nil
 	}
 
-	data.VehicleData.Speed = speed
-	data.VehicleData.Geo = *pnt
+	if presetVehicleData, ok := vehicleData[g.vehicleUUID]; ok {
+		data.VehicleData = presetVehicleData
+
+		data.VehicleData.Speed = speed
+		data.VehicleData.Geo = *pnt
+	}
+
+	if presetDriveData, ok := driverData[g.vehicleUUID]; ok {
+		data.DroverData = presetDriveData
+	}
+
 	return data
 }

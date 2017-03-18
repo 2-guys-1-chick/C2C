@@ -21,7 +21,7 @@ func RoundupConnect(loadedIp []net.IP, packetHandler network.PacketHandler, disc
 	tryoutIps := make(chan net.IP, 255*255)
 
 	//var validIps []net.IP
-	const workerCount = 100
+	const workerCount = 10
 	var wg sync.WaitGroup
 	wg.Add(workerCount)
 
