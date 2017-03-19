@@ -28,13 +28,13 @@ var vehiclesMovementData = map[string][]pointTime{
 	"veh2": {
 		{geo: geo.NewPoint(50.078398, 14.442161), ms: 0},
 		{geo: geo.NewPoint(50.078515, 14.445047), ms: 20000},
-		{geo: geo.NewPoint(50.081468, 14.443996), ms: 20000},
-		{geo: geo.NewPoint(50.081324, 14.444768), ms: 25000},
+		{geo: geo.NewPoint(50.081468, 14.443996), ms: 22000},
+		{geo: geo.NewPoint(50.081324, 14.444768), ms: 5000},
 		{geo: geo.NewPoint(50.082735, 14.443942), ms: 10000},
 		{geo: geo.NewPoint(50.084417, 14.44166), ms: 20000},
-		{geo: geo.NewPoint(50.084487, 14.440517), ms: 20000},
-		{geo: geo.NewPoint(50.085255, 14.440863), ms: 20000},
-		{geo: geo.NewPoint(50.087272, 14.435091), ms: 20000},
+		{geo: geo.NewPoint(50.084487, 14.440517), ms: 6000},
+		{geo: geo.NewPoint(50.085255, 14.440863), ms: 7000},
+		{geo: geo.NewPoint(50.087272, 14.435091), ms: 30000},
 		{geo: geo.NewPoint(50.087169, 14.428461), ms: 20000},
 	},
 }
