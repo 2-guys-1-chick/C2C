@@ -14,7 +14,8 @@ type pointTime struct {
 
 var vehiclesMovementData = map[string][]pointTime{
 	"veh1": {
-		{geo: geo.NewPoint(50.079176, 14.432763), ms: 0},
+		{geo: geo.NewPoint(50.077661, 14.430563), ms: 0},
+		{geo: geo.NewPoint(50.079176, 14.432763), ms: 10000},
 		{geo: geo.NewPoint(50.083114, 14.434791), ms: 25000},
 		{geo: geo.NewPoint(50.084566, 14.435928), ms: 12000},
 		{geo: geo.NewPoint(50.086294, 14.437591), ms: 15000},
